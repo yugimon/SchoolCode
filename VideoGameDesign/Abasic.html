@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Title</title>
+	<style type = 'text/css'>
+		canvas { border: 1px solid black; }
+	</style>
+</head>
+<body>
+	<h1>title</h1>
+	<canvas id='canvas' width='800' height='600'></canvas>
+	<script type='text/javascript'>
+		
+		
+		function main() {
+			ctx = document.getElementById('canvas').getContext("2d");
+			setInterval(function() { update(); draw(ctx); }, 1000/60);
+		}
+		
+		main();
+	</script>
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>EtchASketch</title>
+	<style type = 'text/css'>
+		canvas { border: 1px solid black; }
+	</style>
+</head>
+<body>
+	<h1>Sketch</h1>
+	<canvas id='canvas' width='800' height='600'></canvas>
+	<script type='text/javascript'>
+		var WIDTH = 800;
+		var HEIGHT = 600;
+		var FPS = 60;
+		
+		var boxWidth = 10;
+		var boxHeight = 10;
+		
+		var pX = 0;
+		var pY = 0;
+		var pDx = 5;
+		var pDy = 5;
+		
+		var canvasElement = document.getElementById('canvas');
+		canvasElement.width = WIDTH;
+		canvasElement.height = HEIGHT;
+		var canvas = canvasElement;
+		var color = "#000000";
+		
+		var left = false;
+		var right = false;
+		var up = false;
+		var down = false;
+		
+		if (canvasElement.getContext) {
+			canvas = canvasElement.getContext("2d");
+			
+			setInterval(function() {
+				update();
+				draw();
+			}, 1000/FPS);
+			
+		}
+		else {
+			alert("Your bowser doesn't seem to support the <canvasElement. Sorry.");
+		}
+		
+		function update() {
+			if( up)
+				pY -= pDy;
+			if(down)
+				pY += pDy;
+			if(left)
+				pX -= pDx;
+			if(right)
+				pX += pDx;
+		}
+		
+		
+		function draw() {
+			//canvas.clearRect(0,0, WIDTH, HEIGHT);
+			
+			canvas.fillStyle = color;
+			
+			canvas.fillRect(pX , pY , boxWidth, boxHeight);
+		}
+		
+		
+		function handleKeyDown(evt) {
+			if(evt.keyCode == 38)
+				up = true;
+			if (evt.keyCode == 40)
+				down = true;
+			if (evt.keyCode == 37)
+				left = true;
+			if(evt.keyCode == 39)
+				right = true;
+				
+			if(evt.keyCode == 112) 
+				color = "#000000";
+			if(evt.keyCode == 113) 
+				color = "#FF0000";
+			if(evt.keyCode == 114) 
+				color = "#00FF00";
+			if(evt.keyCode == 115)
+				color = "#0000FF";
+			if(evt.keyCode == 116)
+				color = "#FFFFFF";
+			if(evt.keyCode == 117)
+				color = "#7F00FF";
+				
+			if(evt.keyCode == 49){
+				if(boxWidth < 500 && boxHeight < 500) {
+					boxWidth += 1;
+					boxHeight += 1;
+				}	
+			}
+			if(evt.keyCode == 50){
+				if(boxWidth > 1 && boxHeight > 1) {
+					boxWidth -= 1;
+					boxHeight -= 1;
+				}
+			}
+			
+				
+			if( 37 <= evt.keyCode && evt.keyCode <= 40)
+				evt.preventDefault();
+			if( 112 <= evt.keyCode && evt.keyCode <= 117)
+				evt.preventDefault();
+			
+		}
+		
+		function handleKeyUp(evt) {
+			if(evt.keyCode == 38)
+				up = false;
+			if (evt.keyCode == 40)
+				down = false;
+			if (evt.keyCode == 37)
+				left = false;
+			if(evt.keyCode == 39)
+				right = false;
+				
+			if( 37 <= evt.keyCode && evt.keyCode <= 40)
+				evt.preventDefault();
+			}
+		
+		document.addEventListener('keydown', handleKeyDown);
+		document.addEventListener('keyup', handleKeyUp);
+			
+		
+	</script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Fruit Clicker</title>
+	<style type = 'text/css'>
+		canvas { border: 1px solid black; }
+	</style>
+</head>
+<body>
+	<h1>Fruity</h1>
+	<canvas id='canvas' width='800' height='600'></canvas>
+	<script type='text/javascript'>
+		var ctx;
+		var score = 0;
+		var needToCheckClick = false;
+		var mouse = { x: 0, y: 0 };
+		var fruit = {};
+		
+		
+		function init()
+		{
+			fruit.img = new Image();
+			fruit.w = 50;
+			fruit.h = 60;
+			fruit.x = Math.floor(Math.random()*(ctx.canvas.width-fruit.w));
+			fruit.y = Math.floor(Math.random()*(ctx.canvas.width-fruit.h));
+			fruit.dx = 2;
+			fruit.dy = 2;
+			fruit.ready = false;
+			fruit.img.onload = function() {
+				fruit.ready = true;
+			}
+			fruit.img.src = "mitch.png";
+			
+			ctx.font = "24pt Arial, sans-serif";
+			ctx.textBaseline = "top";
+		}
+		
+		function contains( f, m ) {
+			if ( f.x > m.x )
+				return false;
+			if ( f.x > m.y )
+				return false;
+			if ( m.x > f.x+f.w )
+				return false;
+			if ( m.y > f.y+f.h )
+				return false;
+			return true;
+		}
+		function update() {
+			if ( needToCheckClick ) {
+				if ( contains(fruit, mouse) == true ) {
+					fruit.x = Math.floor(Math.random()*(ctx.canvas.width-fruit.w));
+					fruit.y = Math.floor(Math.random()*(ctx.canvas.width-fruit.h));
+					fruit.dx = -3 + Math.floor(Math.random()*7);
+					fruit.dy = -3 + Math.floor(Math.random()*7);
+					score++;
+				}
+				needToCheckClick = false;
+			}
+			else if ( fruit.ready ) {
+				fruit.x += fruit.dx;
+				fruit.y += fruit.dy;
+				if ( fruit.x+fruit.w > ctx.canvas.width || fruit.x < 0 )
+					fruit.dx *= -1;
+				if ( fruit.y+fruit.h > ctx.canvas.height || fruit.y < 0 )
+					fruit.dy *= -1;
+			}
+		}
+		
+		function draw(ctx) {
+			ctx.clearRect( 0, 0, ctx.canvas.width, ctx.canvas.height);
+			if ( fruit.ready )
+				ctx.drawImage(fruit.img, fruit.x, fruit.y);
+			ctx.fillText(""+score, 50, 20);
+		}
+		
+		function getClick(e) {
+			var evt = e || window.event;
+			mouse.x = evt.pageX - ctx.canvas.offsetLeft;
+			mouse.y = evt.pageY - ctx.canvas.offsetTop;
+			needToCheckClick = true;
+		}
+		
+		function main() {
+			ctx = document.getElementById('canvas').getContext("2d");
+			document.addEventListener('click', getClick);
+			document.addEventListener('drag', getClick);
+			init();
+			setInterval(function() { update(); draw(ctx); }, 1000/60);
+		}
+		main();
+	</script>
+</body>
+</html>

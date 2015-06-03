@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Bouncy Rectangle</title>
+	<style type = 'text/css'>
+		canvas { border: 1px solid black; }
+	</style>
+</head>
+<body>
+	<h1>Bouncy</h1>
+	<canvas id='canvas' width='800' height='600'></canvas>
+	<script type='text/javascript'>
+		var WIDTH = 800;
+		var HEIGHT = 600;
+		var FPS = 60;
+		
+		var boxWidth = 10;
+		var boxHeight = 10;
+		
+		var pX = 0;
+		var pY = 0;
+		var pDx = 5;
+		var pDy = 5;
+		
+		var canvasElement = document.getElementById('canvas');
+		canvasElement.width = WIDTH;
+		canvasElement.height = HEIGHT;
+		var canvas = canvasElement;
+		var color = "#FF0000";
+		
+		if (canvasElement.getContext) {
+			canvas = canvasElement.getContext("2d");
+			
+			setInterval(function() {
+				update();
+				draw();
+			}, 1000/FPS);
+			
+		}
+		else {
+			alert("Your bowser doesn't seem to support the <canvasElement. Sorry.");
+		}
+		
+		
+		
+		function draw() {
+			canvas.clearRect(0,0, WIDTH, HEIGHT);
+			canvas.fillStyle = color;
+			if (color == "#FF0000")
+				color = "#00FF00";
+			else if (color == "#00FF00")
+				color = "#0000FF";
+			else
+				color = "#FF0000";
+			
+			canvas.fillRect(pX , pY , boxWidth, boxHeight);
+		}
+		
+		function update() {
+			pX += pDx;
+			pY += pDy;
+			if (pX + boxWidth >= 800 || pX <= 0 )
+				pDx = -pDx;
+			if ( pY + boxHeight >= 600 || pY <= 0)
+				pDy = -pDy
+		}
+		
+	</script>
+</body>
+</html>

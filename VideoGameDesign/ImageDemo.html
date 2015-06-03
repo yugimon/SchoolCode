@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>ImageDemo</title>
+	<style type = 'text/css'>
+		canvas { border: 1px solid black; }
+	</style>
+</head>
+<body>
+	<h1>Demo</h1>
+	<canvas id='canvas' width='800' height='600'></canvas>
+	<script type='text/javascript'>
+	var ctx;
+	var coolFace = new Image();
+	var ready = false;
+	
+	function init()
+	{
+		coolFace.onload = function() {
+			ready = true;
+		}
+		coolFace.src = "mitch.png";
+	}
+	
+	function draw(ctx) {
+		if ( ready )
+			ctx.drawImage(coolFace, 200, 200);
+	}
+		
+		
+	function main() {
+		ctx = document.getElementById('canvas').getContext("2d");
+		init();
+		setInterval(function() { draw(ctx); }, 1000/60);
+	}
+		
+	main();
+	</script>
+</body>
+</html>

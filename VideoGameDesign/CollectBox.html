@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Collect Box</title>
+	<style type = 'text/css'>
+		canvas { border: 1px solid black; }
+	</style>
+</head>
+<body>
+	<h1>Collect</h1>
+	<canvas id='canvas' width='800' height='600'></canvas>
+	<script type='text/javascript'>
+		var WIDTH = 800;
+		var HEIGHT = 600;
+		var FPS = 300;
+		
+		var boxWidth = 10;
+		var boxHeight = 10;
+		
+		var pX = 0;
+		var pY = 0;
+		var pDx = 5;
+		var pDy = 5;
+		
+		
+		var brw = Math.random()*100 +50;
+		var brh = Math.random()*100 +50;
+		var bx = Math.random()*(WIDTH - brw);
+		var by = Math.random()*(HEIGHT - brh);
+		var rr = Math.floor(Math.random()*256);
+		var gg = Math.floor(Math.random()*256);
+		var bb = Math.floor(Math.random()*256);
+		var boxColor = "rgb("+rr+","+gg+","+bb+");";
+		
+		var score = 0;
+		
+		
+		var canvasElement = document.getElementById('canvas');
+		canvasElement.width = WIDTH;
+		canvasElement.height = HEIGHT;
+		var canvas = canvasElement;
+		var color = "#FF0000";
+		
+		if (canvasElement.getContext) {
+			canvas = canvasElement.getContext("2d");
+			
+			setInterval(function() {
+				update();
+				draw();
+			}, 1000/FPS);
+			
+		}
+		else {
+			alert("Your bowser doesn't seem to support the <canvasElement. Sorry.");
+		}
+		
+		
+		
+		function draw() {
+			canvas.clearRect(0,0, WIDTH, HEIGHT);
+			canvas.fillStyle = color;
+			if (color == "#FF0000")
+				color = "#00FF00";
+			else if (color == "#00FF00")
+				color = "#0000FF";
+			else
+				color = "#FF0000";
+			
+			canvas.fillRect(pX , pY, 10, 10);
+			canvas.fillStyle = boxColor;
+			canvas.fillRect(bx, by, brw, brh);
+			//canvas.fillStyle = "#999999";
+			//canvas.fillRect(WIDTH-70, 40, 100, 20);
+			canvas.fillStyle = "#000000";
+			canvas.textBaseline = "top";
+			canvas.font = "24px sans-serif";
+			canvas.fillText(""+score, WIDTH-50, 50);
+			
+			
+			
+		}
+		
+		
+		function update() {
+			
+			
+			
+			if( collide(pX, pY, 10, 10, bx, by, brw, brh) === true ) {
+			
+			rr = Math.floor(Math.random()*256);
+			gg = Math.floor(Math.random()*256);
+			bb = Math.floor(Math.random()*256);
+			boxColor = "rgb("+rr+","+gg+","+bb+");";
+			score += 1;
+			
+			brw = Math.random()*100 +50;
+			brh = Math.random()*100 +50;
+			bx = Math.random()*(WIDTH - brw);
+			by = Math.random()*(HEIGHT - brh);
+			
+			}
+		}
+		
+		function collide( px, py, pw, ph, bx, by, bw, bh ) {
+			if ( px > bx + bw)
+				return false;
+			if ( py > by + bh)
+				return false;
+			if ( bx > px + pw)
+				return false;
+			if ( by > py + ph)
+				return false;
+			
+			return true;
+		}
+		
+		function handleKeypress(evt) {
+			if(evt.keyCode == 38)
+				pY -= pDy;
+			if (evt.keyCode == 40)
+				pY += pDy;
+			if (evt.keyCode == 37)
+				pX -= pDx;
+			if(evt.keyCode == 39)
+				pX += pDx;
+				
+			if( 37 <= evt.keyCode && evt.keyCode <= 40)
+				evt.preventDefault();
+		}
+		
+		document.addEventListener('keydown', handleKeypress);
+		
+	</script>
+</body>
+</html>

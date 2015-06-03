@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>GameState</title>
+	<style type = 'text/css'>
+		canvas { border: 1px solid black; }
+	</style>
+	<script type='text/javascript' src='howler.min.js'></script>
+</head>
+<body>
+	<h1>Don't Die</h1>
+	<canvas id='canvas' width='800' height='600'></canvas>
+	<script type='text/javascript'>
+		
+		var ctx;
+		var MENU = 0, PLAY = 1, GAMEOVER = 2;
+		var state = MENU;
+		var needToCheckClick = false;
+		var mouse = { x: 0, y: 0};
+		var playButton = {};
+		var waitTime = 0;
+		var lastTime = 0;
+		var lives = 5;
+		var brick = {};
+		var bounce = new Howl({
+			urls: ['Bash.wav']
+		})
+		
+		function init()
+		{
+			ctx.font = "24pt Arial, sans-serif";
+			ctx.textBaseline = "top";
+			playButton.x = ctx.canvas.width/2 - 100;
+			playButton.y = ctx.canvas.height/2 - 50;
+			playButton.w = 200;
+			playButton.h = 100;
+			brick = { x: 50, y: 50, w: 20, h: 20, dx: 4, dy: 4};
+			lives = 5;
+			waitTime = 0;
+			needToCheckClick = false;
+		}
+		function contains(f, m ) {
+			if (( f.x > m.x) ||(f.x > m.y)  ||(m.x > f.x+f.w)  ||(m.y > f.y+f.h ))
+				return false;
+			return true;
+		}
+		function update() {
+			if ( state === MENU) {
+				if ( needToCheckClick) {
+					if(contains(playButton, mouse) === true) {
+						init();
+						state = PLAY;
+					}
+				}
+				needToCheckClick = false;
+			}
+			else if ( state === PLAY) {
+				brick.x += brick.dx;
+				brick.y += brick.dy;
+				if ( brick.x+brick.w > ctx.canvas.width || brick.x < 0 ) {
+					brick.dx = -brick.dx;
+					lives--;
+					bounce.play();
+				}
+				if ( brick.y+brick.h > ctx.canvas.height || brick.y < 0) {
+					brick.dy = -brick.dy;
+					lives--;
+					bounce.play();
+				}
+				if ( lives === 0) {
+					state = GAMEOVER;
+					waitTime = 2000;
+					lastTime = new Date().getTime();
+				}
+			}
+			else if ( state === GAMEOVER ) {
+				var curTime = new Date().getTime();
+				var elapsed = curTime - lastTime;
+				waitTime -= elapsed;
+				lastTime = curTime;
+				if ( waitTime <= 0 )
+					state = MENU;
+			}
+		}
+		function draw(ctx) {
+			ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+			if ( state === MENU ) {
+				ctx.strokeRect(playButton.x, playButton.y, playButton.w, playButton.h);
+				ctx.fillText("[PLAY]", playButton.x+55, playButton.y+30);
+			}
+			else if ( state === PLAY) {
+				ctx.fillRect(brick.x,brick.y,brick.w,brick.h);
+				ctx.fillText(" "+lives, 50, 20);
+			}
+			else if ( state === GAMEOVER) {
+				ctx.fillText("GAMEOVER!", 200, 100);
+			}
+		}
+		
+		function getClick(e) {
+			var evt = e || window.event;
+			mouse.x = evt.pageX - ctx.canvas.offsetLeft;
+			mouse.y = evt.pageY - ctx.canvas.offsetTop;
+			needToCheckClick = true;
+		}
+		function main() {
+			ctx = document.getElementById('canvas').getContext("2d");
+			document.addEventListener('click', getClick);
+			document.addEventListener('drag', getClick);
+			init();
+			setInterval(function() { update(); draw(ctx); }, 1000/60);
+		}
+		
+		main();
+	</script>
+</body>
+</html>

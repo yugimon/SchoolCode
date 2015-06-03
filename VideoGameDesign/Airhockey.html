@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Air Hockey</title>
+	<style type = 'text/css'>
+		canvas { border: 1px solid black; }
+	</style>
+</head>
+<body>
+	<h1>Play On!</h1>
+	<canvas id='canvas' width='800' height='600'></canvas>
+	<script type='text/javascript'>
+		var ctx;
+		var player = { x: 655, y:305, r: 40, dx: 5, dy:5};
+		
+		var key = {left: false, right: false, up: false, down: false};
+		
+		var boxes =  [
+			{ x: 0, y: 0, w: 800, h: 100},
+			{ x: 0, y: 500, w: 800, h: 100},
+			{ x: 0, y: 0, w: 100, h: 200},
+			{ x: 700, y: 0, w: 100, h: 200},
+			{ x: 0, y: 400, w: 100, h: 200},
+			{ x: 700, y: 400, w: 100, h: 200},
+		];
+		var goal = [
+			{ x: 100 , y: 0, w: 5 ,h : 800},
+			{ x: 700 , y: 0, w: 5 ,h : 800},
+		];
+			
+
+		function update() {
+			var orig = { x: player.x, y: player.y};
+			
+			if (key.up)
+				player.y -= player.dy;
+			if (key.down)
+				player.y += player.dy;
+			if (key.left)
+				player.x -= player.dx;
+			if (key.right)
+				player.x += player.dx;
+			
+			for( var i=0; i<boxes.length; i++) {
+			
+				if ( collide(player,boxes[i])){
+					player.x = orig.x;
+					player.y = orig.y;
+				}
+			}
+			for( var i=0; i<goal.length; i++) {
+			
+				if ( goalcoll(player,goal[i])){
+					player.x = orig.x;
+					player.y = orig.y;
+				}
+			}
+			
+			
+			
+			if(player.x - player.r < 0)
+				player.x = player.r;
+			else if (player.x + player.r > ctx.canvas.width )
+				player.x = ctx.canvas.width - player.r;
+			if ( player.y < 0 )
+				player.y = 0;
+			else if (player.y + player.r > ctx.canvas.height)
+				player.y = ctx.canvas.height - player.r;
+		}
+		
+		function collide( player, box) {
+			if ( player.x > box.x + (box.w+player.r) )
+				return false;
+			if (player.y > box.y + (box.h+player.r) )
+				return false;
+			if ( box.x > player.x + player.r)
+				return false;
+			if (box.y > player.y + player.r)
+				return false;
+			
+			return true;
+		}
+		function goalcoll ( player, go) {
+			if ( player.x > go.x + (go.w+player.r) )
+				return false;
+			if (player.y > go.y + (go.h+player.r) )
+				return false;
+			if ( go.x > player.x + player.r)
+				return false;
+			if (go.y > player.y + player.r)
+				return false;
+			
+			return true;
+		}
+		
+		function draw(ctx) {
+			ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+			ctx.fillStyle = "#00FF00";
+			ctx.fillText(player.x, 500, 400);
+			ctx.fillText(player.y, 500, 450);
+			ctx.beginPath();
+			ctx.arc(player.x, player.y, player.r,0, 2*Math.PI);
+			ctx.arc(player.x, player.y, 10,0, 2*Math.PI);
+			ctx.stroke();
+			ctx.fillStyle = "#FF0000";
+			for( var i=0; i<goal.length; i++) {
+				ctx.fillRect(goal[i].x,goal[i].y,goal[i].w,goal[i].h);
+				ctx.fillRect(goal[i].x-5,goal[i].y-5,goal[i].w+5,goal[i].h);
+			}
+			ctx.fillStyle = "#000000";
+			for( var i=0; i<boxes.length; i++) {
+				ctx.fillRect(boxes[i].x,boxes[i].y,boxes[i].w,boxes[i].h);
+				ctx.fillRect(boxes[i].x-5,boxes[i].y-5,boxes[i].w+10,boxes[i].h+10);
+			}
+			
+			
+		}
+		
+		var KEY_UP = 38, KEY_DOWN=40,KEY_LEFT=37,KEY_RIGHT=39;
+		
+		function handleKeyDown(evt) {
+			if ( evt.keyCode == KEY_UP)
+				key.up = true;
+			if ( evt.keyCode == KEY_DOWN)
+				key.down = true;
+			if ( evt.keyCode == KEY_LEFT)
+				key.left = true;
+			if ( evt.keyCode == KEY_RIGHT)
+				key.right = true;
+			
+			if( 37 <= evt.keyCode && evt.keyCode <= 40)
+				evt.preventDefault();
+		}
+		
+		function handleKeyUp(evt) {
+			if ( evt.keyCode == KEY_UP)
+				key.up = false;
+			if ( evt.keyCode == KEY_DOWN)
+				key.down = false;
+			if ( evt.keyCode == KEY_LEFT)
+				key.left = false;
+			if ( evt.keyCode == KEY_RIGHT)
+				key.right = false;
+			
+			if( 37 <= evt.keyCode && evt.keyCode <= 40)
+				evt.preventDefault();
+		}
+		
+		function main() {
+			ctx = document.getElementById('canvas').getContext("2d");
+			document.addEventListener('keydown', handleKeyDown);
+			document.addEventListener('keyup', handleKeyUp);
+			setInterval(function() { update(); draw(ctx); }, 1000/60);
+		}
+		
+		main();
+	</script>
+</body>
+</html>
